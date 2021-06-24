@@ -1,0 +1,212 @@
+openapi: 3.0.0
+info:
+  title: BCB Service Request
+  description: A REST service that provides patient profile details, various allergies, monograph and DRC details. For the service to configure, multum mapping with BCB is required. The service inturn will communicate with the BCB database and fetch us the results in form of response.
+  contact:
+    name: Inpatient Pharmacy Dev
+    url: https://jira2.cerner.com/browse/RXI-45229
+  version: 1.0.0
+paths:
+  /patients/{patientId}/profile:
+    get:
+      tags:
+      - patient profile
+      summary: Gets profile details for specified patient.
+      description: Returns profile details for the patient
+      operationId: GetPatientProfile
+      parameters:
+      - name: Cerner-Correlation-Id
+        in: header
+        schema:
+          type: string
+      - name: patientId
+        in: path
+        description: The id of the patient to get profile for.
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 878234
+      responses:
+        200:
+          description: The patient profile was successfully retrieved.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetPatientProfileResponse'
+        400:
+          description: A parameter was invalid.
+        401:
+          description: The Authorization header was missing or invalid.
+        403:
+          description: Scope is not allowed (OAuth 1.0a only).
+        404:
+          description: The specified patient wasn't found.
+        500:
+          description: An internal server error occurred causing the patient profile
+            retrieval to fail.
+  /interactions/{bcbInteractionsCheck}/getinteractions:
+    get:
+      tags:
+      - bcb interactions
+      summary: Gets bcb interactions for the patient.
+      description: An object with age, sex, weight, pregnancy and other details that returns drug details, allergies, html content with additional information in xml format.
+      operationId: getInteractions
+      parameters:
+      - name: Cerner-Correlation-Id
+        in: header
+        schema:
+          type: string
+      - name: bcbInteractionsCheck
+        in: path
+        description: The object that contains request details for bcb interactions.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                CodesCIP:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/RequestCodeCIPDetails'
+                  description: List of CIPCode.
+                CodesCIPPrescribed:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/RequestCodeCIPDetails'
+                  description: List of CIPCode.
+                NiveauInteraction:
+                  type: string
+                  description: 0 or 1 to indicate bcb drug interaction.
+                  example: 1
+                NiveauSurdosage:
+                  type: string
+                  description: 0 or 1 to indicate drug duplicate.
+                  example: 1
+                NiveauCIProfil:
+                  type: string
+                  description: 0 or 1 to do BCB Multiple Interaction Checking
+                  example: 1
+                Age:
+                  type: string
+                  description: Age in months.
+                  example: 378
+                Sexe:
+                  type: string
+                  description: M or F to indicate gender.
+                  example: 1
+                CodesCim10:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/RequestCodeCim10Details'
+                  description: List of CodeCim10.
+                Grossesse:
+                  type: string
+                  description: Specifies pregnancy in weeks.
+                  example: 16
+                Allaitement:
+                  type: string
+                  description: 0 or 1 value for patient lactation.
+                  example: 0
+                InsuffisanceHepatique:
+                  type: string
+                  description: Hepatotic insufficiency value for the patient.
+                  example: 160
+                Poids:
+                  type: string
+                  description: Weight of the patient.
+                  example: 55
+                ClairanceCreatinine:
+                  type: string
+                  description: Creatinine Clearance value for the patient.
+                  example: 127
+                NiveauIPC:
+                  type: string
+                  description: 0 or 1 for BCB IV Compatibility checking
+                  example: 1
+                NiveauAllergies:
+                  type: string
+                  description: 0 or1 to check for allergies.
+                  example: 1
+      responses:
+        200:
+          description: The patient interaction details were successfully retrieved.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetPatientProfileResponse'
+        400:
+          description: A parameter was invalid.
+        401:
+          description: The Authorization header was missing or invalid.
+        403:
+          description: Scope is not allowed (OAuth 1.0a only).
+        404:
+          description: The specified interactions wasn't found.
+        500:
+          description: An internal server error occurred causing the interactions
+            retrieval to fail.
+components:
+  schemas:
+    GetPatientProfileResponse:
+      type: object
+      properties:
+        AgeInMonths:
+          type: string
+          description: Age of the patient in months.
+          example: '120'
+        WeightInKilograms:
+          type: string
+          description: Weight of the patient in Kgs.
+          example: '70'
+        PregnancyInWeeks:
+          type: string
+          description: Expected pregnancy of the patient in weeks.
+          example: '12'
+        Lactation:
+          type: string
+          description: If any lactation for the patient.
+          example: '0'
+        Allergies:
+          type: string
+          description: Allergies for the patient.
+          example: 'Allergic to capsules'
+        Diagnosis:
+          type: string
+          description: Any diagnosis for the patient.
+          example: 'Diagnoised with Catharat'
+        Gender:
+          type: string
+          description: Gender of the patient.
+          example: 'Female'
+        Medications:
+          type: string
+          description: Medications for the patient.
+          example: 'Medication for low blood sugar'
+        Name:
+          type: string
+          description: Name of the patient
+          example: 'Kate'
+      description: Contains patient profile details.
+    RequestCodeCIPDetails:
+      type: object
+      properties:
+        codecip:
+          type: integer
+          description: The CIPCode value.
+          format: int32
+          example: 9240036
+      description: Specifies the CIP Code number.
+    RequestCodeCim10Details:
+      type: object
+      properties:
+        CodeCim10:
+          type: string
+          description: The CodeCim10 value.
+          example: 107926013
+      description: Specifies the CodeCim10 value.
