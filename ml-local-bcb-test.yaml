@@ -1,0 +1,33 @@
+---
+ea_transition: true
+group: com.cerner.pharmacy.bcb
+artifact: pharmacy-bcb-service-reactor
+source_repo: https://github.cerner.com/pharmacy/pharmacy-bcb-service-reactor/tree/RXI-49963
+target_initial_deployment: 2021-07
+authentication_exemption: This service requires supporting legacy NoAuth flows.
+properties:
+  alva.legacy.servlet.org.apache.cxf.transport.servlet.CXFServlet.mapping: "/services/*"
+authentication:
+- OAuth-1.0a
+- BasicAuth
+- NoAuth
+bundles:
+- alva-war-bundle
+expected_load: Service for interaction checking, DRC and fetching monograph details.
+stateless: false
+multi_tenant: false
+existing_deployments:
+- types:
+  - Websphere
+overrides:
+  dev:
+    version: 1.0.0-SNAPSHOT
+    deployed_tenants:
+    - 64dev.ip.devcerner.net
+    - d1801.ip.devcerner.net
+    - deveng.ip.devcerner.net
+    - inddv.ip.devcerner.net
+    - provide.ip.devcerner.net
+    - swedv.ip.devcerner.net
+    compute_resources:
+      metaspace: 190m
