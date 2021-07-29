@@ -1,0 +1,186 @@
+openapi: 3.0.0
+info:
+  title: BCB Service Request
+  contact:
+    name: Inpatient Pharmacy Dev
+    url: https://jira2.cerner.com/browse/RXI-45229
+  version: '1.0.0'
+servers:
+- url: http://localhost:9090/BCBXMLServicePort
+  variables: {}
+paths:
+  /monographiehtmls:
+    post:
+      tags:
+      - BCBXMLServiceServiceSoapBinding
+      summary: MonographieHTML
+      operationId: MonographieHTML
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/MonographieHTML1'
+        required: true
+      responses:
+        '200':
+          description: Successfully retrieved the response
+          headers: {}
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/MonographieHTMLResponse1'
+      deprecated: false
+  /controlexmls:
+    post:
+      tags:
+      - BCBXMLServiceServiceSoapBinding
+      summary: ControleXML
+      operationId: ControleXML
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ControleXML1'
+        required: true
+      responses:
+        '200':
+          description: Successfully retrieved the response
+          headers: {}
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ControleXMLResponse1'
+      deprecated: false
+components:
+  schemas:
+    ControleXML:
+      title: ControleXML
+      type: object
+      properties:
+        arg0:
+          type: string
+          xml:
+            name: arg0
+            namespace: http://endpoint.bcb.pharmacy.cerner.com/
+            prefix: tns
+            attribute: false
+            wrapped: false
+      description: ''
+      xml:
+        name: ControleXML
+        namespace: http://endpoint.bcb.pharmacy.cerner.com/
+        prefix: tns
+        attribute: false
+        wrapped: false
+    ControleXMLResponse:
+      title: ControleXMLResponse
+      type: object
+      properties:
+        return:
+          type: string
+          xml:
+            name: return
+            namespace: http://endpoint.bcb.pharmacy.cerner.com/
+            prefix: tns
+            attribute: false
+            wrapped: false
+      description: ''
+      xml:
+        name: ControleXMLResponse
+        namespace: http://endpoint.bcb.pharmacy.cerner.com/
+        prefix: tns
+        attribute: false
+        wrapped: false
+    MonographieHTML:
+      title: MonographieHTML
+      type: object
+      properties:
+        arg0:
+          type: string
+          xml:
+            name: arg0
+            namespace: http://endpoint.bcb.pharmacy.cerner.com/
+            prefix: tns
+            attribute: false
+            wrapped: false
+        arg1:
+          type: string
+          xml:
+            name: arg1
+            namespace: http://endpoint.bcb.pharmacy.cerner.com/
+            prefix: tns
+            attribute: false
+            wrapped: false
+      description: ''
+      xml:
+        name: MonographieHTML
+        namespace: http://endpoint.bcb.pharmacy.cerner.com/
+        prefix: tns
+        attribute: false
+        wrapped: false
+    MonographieHTMLResponse:
+      title: MonographieHTMLResponse
+      type: object
+      properties:
+        return:
+          type: string
+          xml:
+            name: return
+            namespace: http://endpoint.bcb.pharmacy.cerner.com/
+            prefix: tns
+            attribute: false
+            wrapped: false
+      description: ''
+      xml:
+        name: MonographieHTMLResponse
+        namespace: http://endpoint.bcb.pharmacy.cerner.com/
+        prefix: tns
+        attribute: false
+        wrapped: false
+    ControleXML1:
+      title: ControleXML1
+      required:
+      - ControleXML
+      type: object
+      properties:
+        ControleXML:
+          $ref: '#/components/schemas/ControleXML'
+    ControleXMLResponse1:
+      title: ControleXMLResponse1
+      required:
+      - ControleXMLResponse
+      type: object
+      properties:
+        ControleXMLResponse:
+          $ref: '#/components/schemas/ControleXMLResponse'
+      xml:
+        name: ControleXMLResponse
+        attribute: false
+        wrapped: false
+    MonographieHTML1:
+      title: MonographieHTML1
+      required:
+      - MonographieHTML
+      type: object
+      properties:
+        MonographieHTML:
+          $ref: '#/components/schemas/MonographieHTML'
+    MonographieHTMLResponse1:
+      title: MonographieHTMLResponse1
+      required:
+      - MonographieHTMLResponse
+      type: object
+      properties:
+        MonographieHTMLResponse:
+          $ref: '#/components/schemas/MonographieHTMLResponse'
+      xml:
+        name: MonographieHTMLResponse
+        attribute: false
+        wrapped: false
+tags:
+- name: BCBXMLServiceServiceSoapBinding
+  description: ''
