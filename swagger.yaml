@@ -1,0 +1,178 @@
+openapi: 3.0.1
+info:
+  title: Pharmacy Dispense Routing Service
+  description: A REST service that provides the advanced dispense routing information
+    for the requested orders.
+  contact:
+    name: Pharmacy Inpatient Dev
+    url: https://jira2.cerner.com/projects/RXI
+  version: 1.0.0
+paths:
+  /dispense-routes:
+    post:
+      tags:
+      - dispense-routes
+      summary: This transaction returns the advanced dispense routing detail for a
+        list of requested orders and the associated items.
+      description: Return the list of advanced dispense routing information of each
+        orderId
+      operationId: getDispenseRouting
+      parameters:
+      - name: Authorization
+        in: header
+        description: Authorization token. Supports Millennium OAuth1 and OAuth2.
+        schema:
+          type: string
+      - name: Cerner-Correlation-Id
+        in: header
+        description: Multi-stack tracking identifier for logging purposes.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DispenseRoutingRequest'
+      responses:
+        200:
+          description: The advanced dispense routing information is retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DispenseRoutingResponse'
+        400:
+          description: The requested JSON is invalid.
+        404:
+          description: The requested Order Id not found.
+        401:
+          description: The Authorization header was missing or invalid.
+        403:
+          description: The OAuth principal or domain is invalid.
+        500:
+          description: An internal server error occurred causing the dispense routing
+            information retrieval to fail.
+components:
+  schemas:
+    DispenseRoutingResponse:
+      type: object
+      properties:
+        dispenseRoutingResponse:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderDispenseInfo'
+      description: A list of advanced dispense routing information for the requested
+        orders.
+    OrderADRInfo:
+      type: object
+      properties:
+        bestResourceADRInfo:
+          $ref: '#/components/schemas/ResourceADRInfo'
+        resourcesADRInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceADRInfo'
+      description: Detailed advanced dispense routing information for the requested
+        order and the associated items.
+    OrderDispenseInfo:
+      required:
+      - itemInfo
+      - orderId
+      type: object
+      properties:
+        orderId:
+          type: string
+          description: The order identifier for which the advanced dispense routing
+            is retrieved.
+          example: "29697829"
+        itemInfo:
+          type: array
+          items:
+            type: string
+            description: The set of products that is evaluated for advanced dispense
+              routing for the requested order.
+            example: 29697829,29697828,29697827
+        orderADRInfo:
+          $ref: '#/components/schemas/OrderADRInfo'
+      description: Detailed dispense information for the given order and the associated
+        items.
+    Unit:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Id of the unit
+          example: "12345"
+        display:
+          type: string
+          description: Display information about the unit.
+          example: nurse-1
+      description: Detailed information for the a given resource unit.
+    ResourceADRInfo:
+      type: object
+      properties:
+        serviceResource:
+          $ref: '#/components/schemas/Unit'
+        location:
+          $ref: '#/components/schemas/Unit'
+        inventoryLocation:
+          $ref: '#/components/schemas/Unit'
+      description: Detailed resource information for the requested order and the associated
+        items.
+    DispenseRoutingRequest:
+      type: object
+      properties:
+        dispenseRoutingRequest:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderInfo'
+      description: Contains a request to retrieve advanced dispense routing information
+        for the provided orders.
+    OrderInfo:
+      required:
+      - actionSequence
+      - orderId
+      type: object
+      properties:
+        orderId:
+          type: string
+          description: The identifier of the order to get the dispense information
+            for.
+          example: "2100439947"
+        actionSequence:
+          type: number
+          description: The identifier of the action sequence event of an order which
+            is related to the action taken.
+          format: Long
+          example: 1
+        workstationDispenseLocationId:
+          type: string
+          description: The workstation location to be evaluated for advanced dispense
+            routing
+          example: "2042092831"
+        isFloorStockOverride:
+          type: boolean
+          description: |-
+            If true, the advanced dispense routing service evaluate available non-floor-stock locations as the best location. If, false the advanced dispense routing service evaluate available floor-stock locations as the
+             best location. If not populated, the service will evaluate both floor-stock and non-floor-stock locations.
+        productInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductInfo'
+      description: Contains a request to retrieve advanced dispense routing information
+        for the requested order and the associated items.
+    ProductInfo:
+      required:
+      - itemId
+      type: object
+      properties:
+        itemId:
+          type: string
+          description: The identifier of the pharmacy product.
+          example: "29697829"
+        dispenseQty:
+          type: number
+          default: 0
+          description: The quantity required to be dispensed at the initial dose location.
+          format: Long
+          example: 2
+      description: Product information for the given orders.
